@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 我们在配置自定义属性文件的时候，既可以向如下形式将name和format写在一起然在declare-styleable标签中用name引用，也可以直接都定义的declare-styleable
+    标签中
+    -->
+    <attr name="progress_unreach_color" format="color"></attr>
+    <attr name="progress_unreach_height" format="dimension"></attr>
+    <attr name="progress_reach_color" format="color"></attr>
+    <attr name="progress_reach_height" format="dimension"></attr>
+    <attr name="progress_text_color" format="color"></attr>
+    <attr name="progress_text_height" format="dimension"></attr>
+    <attr name="progress_text_offset" format="dimension"></attr>
+
+    <declare-styleable name="My_ProgressBar_View">
+        <attr name="progress_unreach_color"></attr>
+        <attr name="progress_unreach_height"></attr>
+        <attr name="progress_reach_color"></attr>
+        <attr name="progress_reach_height"></attr>
+        <attr name="progress_text_color"></attr>
+        <attr name="progress_text_height"></attr>
+        <attr name="progress_text_offset"></attr>
+
+    </declare-styleable>
+
+    <declare-styleable name="RoundsProgressBar">
+        <attr name="radius" format="dimension"></attr><!--这是半径属性，对应的是圆形进度条的半径,(dimension表示的是尺寸)-->
+    </declare-styleable>
+</resources>

@@ -1,0 +1,119 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#2988f6"
+    android:orientation="vertical"
+    android:paddingRight="20dp">
+
+    <ImageView
+        android:id="@+id/img_log"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/logo_03" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp">
+
+        <EditText
+            android:id="@+id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerInParent="true"
+            android:background="#2988f6"
+            android:drawableLeft="@drawable/tubiao_user_name"
+            android:hint="请输入用户名"
+            android:paddingRight="40dp"
+            android:textColor="#fff"
+            android:textColorHint="#fff"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/user_pwd"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:layout_alignLeft="@+id/user_name"
+            android:layout_below="@+id/user_name"
+            android:background="#2988f6"
+            android:drawableLeft="@drawable/tubiao_password"
+            android:hint="请输入密码"
+            android:textColor="#fff"
+            android:textColorHint="#fff"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/user_bir"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:gravity="center"
+            android:layout_alignLeft="@+id/user_name"
+            android:layout_below="@+id/user_pwd"
+            android:background="#2988f6"
+            android:drawableLeft="@drawable/tubiao_birthday"
+            android:hint="请选择生日"
+            android:textColor="#fff"
+            android:textColorHint="#fff"
+            android:textSize="16sp"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/user_sex"
+            android:layout_width="wrap_content"
+            android:layout_height="45dp"
+            android:gravity="center"
+            android:layout_alignLeft="@+id/user_name"
+            android:layout_below="@+id/user_bir"
+            android:background="#2988f6"
+            android:drawableLeft="@drawable/tubiao_sex"
+            android:hint="请选择性别"
+            android:textColor="#fff"
+            android:textColorHint="#fff"
+            android:textSize="16sp"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/txt_go_reg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignRight="@+id/user_name"
+            android:layout_below="@+id/user_sex"
+            android:text="还没有账号呢？"
+            android:textColor="#fff"
+            android:textSize="14sp" />
+
+        <Button
+            android:id="@+id/zhuce"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_alignLeft="@+id/user_name"
+            android:layout_alignRight="@+id/user_name"
+            android:layout_below="@+id/user_sex"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bg_button"
+            android:text="注 册"
+            android:textColor="#2988f6"
+            android:textSize="18sp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/denglu"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_alignLeft="@+id/user_name"
+            android:layout_alignRight="@+id/user_name"
+            android:layout_below="@+id/txt_go_reg"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bg_button"
+            android:text="登 录"
+            android:textColor="#2988f6"
+            android:textSize="18sp" />
+    </RelativeLayout>
+
+</LinearLayout>

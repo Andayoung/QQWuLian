@@ -1,0 +1,49 @@
+apply plugin: 'com.android.application'
+apply plugin:'android-apt'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.3"
+    defaultConfig {
+//        applicationId "com.gg.qqwulian"
+        applicationId "com.tencent.devicedemo"
+        minSdkVersion 14
+        targetSdkVersion 20
+        maxSdkVersion = 23
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
+    testCompile 'junit:junit:4.12'
+    compile 'com.jakewharton:butterknife:8.4.0'
+    apt 'com.jakewharton:butterknife-compiler:8.4.0'
+    compile files('libs/volley.jar')
+    compile files('libs/txdevicesdk.jar')
+    compile files('libs/Msc.jar')
+    compile files('libs/Sunflower.jar')
+    compile files('libs/TencentLocationSDK_v5.0.1_r251203_170116_1729.jar')
+    //    compile project(':QQWuLian')
+    compile files('src/main/jniLibs/jg_filter_sdk_1.1.jar')
+    compile files('src/main/jniLibs/mid-core-sdk-3.7.2.jar')
+    compile files('src/main/jniLibs/wup-1.0.0.E-SNAPSHOT.jar')
+    compile files('src/main/jniLibs/Xg_sdk_v3.1_20170417_0946.jar')
+}

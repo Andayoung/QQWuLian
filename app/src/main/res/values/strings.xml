@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">UU对话学习机器人</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- 听写 -->
+    <string name="text_begin">请开始说话…</string>
+    <string name="text_begin_recognizer">开始音频流识别</string>
+    <string name="text_upload_contacts">上传联系人</string>
+    <string name="text_upload_userwords">上传用户词表</string>
+    <string name="text_upload_success">上传成功</string>
+    <string name="text_userword_empty">词表下载失败或内容为空</string>
+    <string name="text_download_success">下载成功</string>
+    <string name="pref_key_iat_show">iat_show</string>
+    <string name="pref_title_iat_show">显示听写界面</string>
+    <string name="pref_title_iat_dwa">结果动态修正</string>
+
+    <string name="progress_format1">%1$s</string>
+    <string name="progress_format2">%2$s</string>
+
+    <string name="close_video">关闭</string>
+    <string name="switch_camera">切换摄像头</string>
+    <string name="camera_image">camera image</string>
+    <string name="reject_video">拒绝</string>
+    <string name="accept_video">接受</string>
+    <string name="bussiness_name">business_name:\nFileMsg表示发送文件\nImgMsg表示发送图片\nVideoMsg表示发送视频\nAudioMsg表示发送语音\nchanneltype:\n1表示FTN通道，2表示小文件通道\nfiletype:\n4表示其他文件，为1是图片，为2是视频，为3是语音</string>
+    
+</resources>

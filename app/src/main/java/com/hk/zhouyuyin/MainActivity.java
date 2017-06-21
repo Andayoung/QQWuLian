@@ -1,6 +1,9 @@
 package com.hk.zhouyuyin;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -18,6 +22,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.hk.zhouyuyin.util.DateChoose;
+import com.tencent.android.tpush.XGIOperateCallback;
+import com.tencent.android.tpush.XGPushClickedResult;
+import com.tencent.android.tpush.XGPushConfig;
+import com.tencent.android.tpush.XGPushManager;
 import com.tencent.devicedemo.R;
 
 import org.json.JSONException;
@@ -46,9 +55,9 @@ public class MainActivity extends Activity {
     @BindView(R.id.user_pwd)
     EditText userPwd;
     @BindView(R.id.user_bir)
-    EditText userBir;
+    TextView userBir;
     @BindView(R.id.user_sex)
-    EditText userSex;
+    TextView userSex;
     @BindView(R.id.txt_go_reg)
     TextView txtGoReg;
     @BindView(R.id.zhuce)
@@ -62,34 +71,82 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reg_log);
         ButterKnife.bind(this);
-        if ( checkIsLogin()) {
-            Intent intent=new Intent(MainActivity.this, OldMainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Context context = getApplicationContext();
+//        XGPushManager.registerPush(context);
+        XGPushConfig.enableDebug(context, true);
+//注册方法
+        XGPushManager.registerPush(context, new XGIOperateCallback() {
+            @Override
+            public void onSuccess(Object data, int flag) {
+                Log.e("TPush", "注册成功,Token值为：" + data);
+            }
+
+            @Override
+            public void onFail(Object data, int errCode, String msg) {
+                Log.e("TPush", "注册失败,错误码为：" + errCode + ",错误信息：" + msg);
+            }
+        });
+        if (checkIsLogin()) {
+            Intent intent = new Intent(MainActivity.this, OldMainActivity.class);
             startActivity(intent);
             finish();
         }
+
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        XGPushClickedResult clickedResult = XGPushManager.onActivityStarted(this);
+        if (clickedResult != null) {
+            String title = clickedResult.getTitle();
+            Log.e("TPush", "title:" + title);
+            String id = clickedResult.getMsgId() + "";
+            Log.e("TPush", "id:" + id);
+            String content = clickedResult.getContent();
+            Log.e("TPush", "content:" + content);
+        }
+    }
+
     private boolean checkIsLogin() {
         SharedPreferences pre = getSharedPreferences("dataz", MODE_PRIVATE);
-        if(pre.getString("serialNumber","").equals("")){
+        Log.e("MainActivity", "serialNumber=" + pre.getString("serialNumber", ""));
+        if (pre.getString("serialNumber", "").equals("")) {
             return false;
-        }else {
+        } else {
             return true;
         }
 
     }
-    @OnClick({R.id.zhuce, R.id.denglu, R.id.txt_go_reg})
+
+    @OnClick({R.id.zhuce, R.id.denglu, R.id.txt_go_reg,R.id.user_sex,R.id.user_bir})
     public void submit(View btn) {
         if (btn.getId() == R.id.zhuce) {
-            Log.e("OldMainActivity", "zhuce!");
-            rigister();
+            if (!userName.getText().toString().equals("")&& !userPwd.getText().toString().equals("")
+                    && !userBir.getText().toString().equals("") && !userSex.getText().toString().equals("")) {
+                Log.e("OldMainActivity", "zhuce!");
+                rigister();
+            } else {
+                Toast.makeText(MainActivity.this, "请填写完整", Toast.LENGTH_SHORT).show();
+            }
+
         } else if (btn.getId() == R.id.denglu) {
             Log.e("OldMainActivity", "denglu!");
-            login();
+            if (!userName.getText().toString().equals("") && !userPwd.getText().toString().equals("")) {
+                login();
+            } else {
+                Toast.makeText(MainActivity.this, "请填写完整", Toast.LENGTH_SHORT).show();
+            }
+
         } else if (btn.getId() == R.id.txt_go_reg) {
             dlToZc();
+        }else if(btn.getId()==R.id.user_bir){
+            createDateDialog();
+        }else if(btn.getId()==R.id.user_sex){
+            createSexDialog();
         }
     }
+
 
     private void dlToZc() {
         imgLog.setVisibility(View.GONE);
@@ -116,29 +173,47 @@ public class MainActivity extends Activity {
             public void onResponse(String s) {
                 Log.e("OldMainActivity", "login-s=" + s);
                 try {
-                    JSONObject jsonData = new JSONObject(s);
-                    JSONObject jsonResult = jsonData.getJSONObject("data");
-                    Log.e("OldMainActivity", "jsonResult" + jsonResult + ",serialNumber=" + jsonResult.getString("jsonResult"));
-                    SharedPreferences.Editor editor = getSharedPreferences("dataz", MODE_PRIVATE).edit();
-                    editor.putString("serialNumber", jsonResult.getString("jsonResult"));//"serialNumber":"20160222uu000003"
-                    editor.commit();
+                    String resultSuccess = new JSONObject(s).getString("success");
+                    if (resultSuccess.equals("true")) {
+                        JSONObject jsonResult = new JSONObject(s).getJSONObject("data");
+                        SharedPreferences.Editor editor = getSharedPreferences("dataz",MODE_WORLD_READABLE).edit();
+                        editor.putString("serialNumber", jsonResult.getString("serialNumber"));//"serialNumber":"20160222uu000003"
+                        editor.commit();
+                        Intent intent = new Intent(MainActivity.this, OldMainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        String faultMsg = new JSONObject(s).getString("msg");
+                        Toast.makeText(MainActivity.this, faultMsg, Toast.LENGTH_SHORT).show();
+
+                    }
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                finish();
+
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 Log.e("OldMainActivity", "login-error=" + volleyError);
+                Toast.makeText(MainActivity.this, volleyError.toString(), Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
             protected Map<String, String> getParams() throws AuthFailureError {
-                Map<String, String> map = new HashMap<String, String>();
-                map.put("userName", userName.getText().toString());
-                map.put("passWord", userPwd.getText().toString());
-                return map;
+                String md5Secret = null;
+                try {
+                    md5Secret = getMd5Secret(userPwd.getText().toString());
+                    Map<String, String> map = new HashMap<String, String>();
+                    map.put("userName", userName.getText().toString());
+                    map.put("passWord", md5Secret);
+                    return map;
+                } catch (NoSuchAlgorithmException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+
             }
         };
         mQueue.add(stringRequest);
@@ -150,12 +225,25 @@ public class MainActivity extends Activity {
             @Override
             public void onResponse(String s) {
                 Log.e("OldMainActivity", "rigister-s=" + s);
-                zcToDl();
+                try {
+                    String resultSuccess = new JSONObject(s).getString("success");
+                    if (resultSuccess.equals("true")) {
+                        zcToDl();
+                    } else {
+                        String faultMsg = new JSONObject(s).getString("msg");
+                        Toast.makeText(MainActivity.this, faultMsg, Toast.LENGTH_SHORT).show();
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 Log.e("OldMainActivity", "rigister-error=" + volleyError);
+                Toast.makeText(MainActivity.this, volleyError.toString(), Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -188,5 +276,26 @@ public class MainActivity extends Activity {
         Log.e("MainActivity", "加密=" + builder.toString());
         return builder.toString();
         //c0bb4f54f1d8b14caf6fe1069e5f93ad
+    }
+    private void createSexDialog(){
+        final String[] single_list = {"男","女"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("选择性别");
+        int j=(userSex.getText()!=null&&userSex.getText().toString().equals("女"))?1:0;
+        builder.setSingleChoiceItems(single_list, j, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String str = single_list[which];
+                userSex.setText(str);
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+    private void createDateDialog() {
+        DateChoose dateDialog = new DateChoose(MainActivity.this,"2013年9月3日 14:44");
+        dateDialog.dateTimePicKDialog(userBir);
     }
 }
