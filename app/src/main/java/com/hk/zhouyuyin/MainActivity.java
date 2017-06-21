@@ -23,10 +23,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.hk.zhouyuyin.util.DateChoose;
-import com.tencent.android.tpush.XGIOperateCallback;
-import com.tencent.android.tpush.XGPushClickedResult;
-import com.tencent.android.tpush.XGPushConfig;
-import com.tencent.android.tpush.XGPushManager;
 import com.tencent.devicedemo.R;
 
 import org.json.JSONException;
@@ -71,21 +67,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_reg_log);
         ButterKnife.bind(this);
-        Context context = getApplicationContext();
-//        XGPushManager.registerPush(context);
-        XGPushConfig.enableDebug(context, true);
-//注册方法
-        XGPushManager.registerPush(context, new XGIOperateCallback() {
-            @Override
-            public void onSuccess(Object data, int flag) {
-                Log.e("TPush", "注册成功,Token值为：" + data);
-            }
-
-            @Override
-            public void onFail(Object data, int errCode, String msg) {
-                Log.e("TPush", "注册失败,错误码为：" + errCode + ",错误信息：" + msg);
-            }
-        });
         if (checkIsLogin()) {
             Intent intent = new Intent(MainActivity.this, OldMainActivity.class);
             startActivity(intent);
@@ -94,19 +75,6 @@ public class MainActivity extends Activity {
 
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        XGPushClickedResult clickedResult = XGPushManager.onActivityStarted(this);
-        if (clickedResult != null) {
-            String title = clickedResult.getTitle();
-            Log.e("TPush", "title:" + title);
-            String id = clickedResult.getMsgId() + "";
-            Log.e("TPush", "id:" + id);
-            String content = clickedResult.getContent();
-            Log.e("TPush", "content:" + content);
-        }
-    }
 
     private boolean checkIsLogin() {
         SharedPreferences pre = getSharedPreferences("dataz", MODE_PRIVATE);

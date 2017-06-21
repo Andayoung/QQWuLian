@@ -41,9 +41,4 @@ dependencies {
     compile files('libs/Msc.jar')
     compile files('libs/Sunflower.jar')
     compile files('libs/TencentLocationSDK_v5.0.1_r251203_170116_1729.jar')
-    //    compile project(':QQWuLian')
-    compile files('src/main/jniLibs/jg_filter_sdk_1.1.jar')
-    compile files('src/main/jniLibs/mid-core-sdk-3.7.2.jar')
-    compile files('src/main/jniLibs/wup-1.0.0.E-SNAPSHOT.jar')
-    compile files('src/main/jniLibs/Xg_sdk_v3.1_20170417_0946.jar')
 }
