@@ -2,7 +2,6 @@ package com.hk.zhouyuyin;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -24,6 +23,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.hk.zhouyuyin.util.DateChoose;
+import com.hk.zhouyuyin.util.SerialNumberHelper;
 import com.tencent.devicedemo.R;
 
 import org.json.JSONException;
@@ -61,7 +61,8 @@ public class MainActivity extends Activity {
     Button zhuce;
     @BindView(R.id.denglu)
     Button denglu;
-
+    SerialNumberHelper serialNumberHelper;
+    private String whichApp="";//1:myclass;2:habit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,13 +75,24 @@ public class MainActivity extends Activity {
             finish();
         }
 
+        Intent intent = getIntent();
+        if(intent != null) {
+            whichApp=intent.getStringExtra("appName");
+        }
+//        serialNumberHelper.makeDir();
+//        serialNumberHelper.save2File("1234567890");
+//        Log.e("MainActivity","num="+serialNumberHelper.read4File());
+
     }
 
 
     private boolean checkIsLogin() {
-        SharedPreferences pre = getSharedPreferences("dataz", MODE_PRIVATE);
-        Log.e("MainActivity", "serialNumber=" + pre.getString("serialNumber", ""));
-        if (pre.getString("serialNumber", "").equals("")) {
+        if(serialNumberHelper==null){
+            serialNumberHelper = new SerialNumberHelper(getApplicationContext());
+        }
+        String serialNumber=serialNumberHelper.read4File();
+        Log.e("MainActivity", "serialNumber=" + serialNumber);
+        if (serialNumber==null||serialNumber.equals("")) {
             return false;
         } else {
             return true;
@@ -88,10 +100,10 @@ public class MainActivity extends Activity {
 
     }
 
-    @OnClick({R.id.zhuce, R.id.denglu, R.id.txt_go_reg,R.id.user_sex,R.id.user_bir})
+    @OnClick({R.id.zhuce, R.id.denglu, R.id.txt_go_reg, R.id.user_sex, R.id.user_bir})
     public void submit(View btn) {
         if (btn.getId() == R.id.zhuce) {
-            if (!userName.getText().toString().equals("")&& !userPwd.getText().toString().equals("")
+            if (!userName.getText().toString().equals("") && !userPwd.getText().toString().equals("")
                     && !userBir.getText().toString().equals("") && !userSex.getText().toString().equals("")) {
                 Log.e("OldMainActivity", "zhuce!");
                 rigister();
@@ -109,9 +121,9 @@ public class MainActivity extends Activity {
 
         } else if (btn.getId() == R.id.txt_go_reg) {
             dlToZc();
-        }else if(btn.getId()==R.id.user_bir){
+        } else if (btn.getId() == R.id.user_bir) {
             createDateDialog();
-        }else if(btn.getId()==R.id.user_sex){
+        } else if (btn.getId() == R.id.user_sex) {
             createSexDialog();
         }
     }
@@ -145,12 +157,19 @@ public class MainActivity extends Activity {
                     String resultSuccess = new JSONObject(s).getString("success");
                     if (resultSuccess.equals("true")) {
                         JSONObject jsonResult = new JSONObject(s).getJSONObject("data");
-                        SharedPreferences.Editor editor = getSharedPreferences("dataz",MODE_WORLD_READABLE).edit();
-                        editor.putString("serialNumber", jsonResult.getString("serialNumber"));//"serialNumber":"20160222uu000003"
-                        editor.commit();
-                        Intent intent = new Intent(MainActivity.this, OldMainActivity.class);
-                        startActivity(intent);
-                        finish();
+                        if(serialNumberHelper==null){
+                            serialNumberHelper = new SerialNumberHelper(getApplicationContext());
+                        }
+                        serialNumberHelper.makeDir();
+                        serialNumberHelper.save2File(jsonResult.getString("serialNumber"));//"serialNumber":"20160222uu000003"
+                        if(whichApp.equals("myclass")){
+                            finish();
+                        }else {
+                            Intent intent = new Intent(MainActivity.this, OldMainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                       
                     } else {
                         String faultMsg = new JSONObject(s).getString("msg");
                         Toast.makeText(MainActivity.this, faultMsg, Toast.LENGTH_SHORT).show();
@@ -246,11 +265,12 @@ public class MainActivity extends Activity {
         return builder.toString();
         //c0bb4f54f1d8b14caf6fe1069e5f93ad
     }
-    private void createSexDialog(){
-        final String[] single_list = {"男","女"};
+
+    private void createSexDialog() {
+        final String[] single_list = {"男", "女"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("选择性别");
-        int j=(userSex.getText()!=null&&userSex.getText().toString().equals("女"))?1:0;
+        int j = (userSex.getText() != null && userSex.getText().toString().equals("女")) ? 1 : 0;
         builder.setSingleChoiceItems(single_list, j, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -263,17 +283,12 @@ public class MainActivity extends Activity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+
     private void createDateDialog() {
-        DateChoose dateDialog = new DateChoose(MainActivity.this,"2013年9月3日 14:44");
+        DateChoose dateDialog = new DateChoose(MainActivity.this, "2013年9月3日 14:44");
         dateDialog.dateTimePicKDialog(userBir);
     }
-    /**
-     * 监听Back键按下事件,方法1:
-     * 注意:
-     * super.onBackPressed()会自动调用finish()方法,关闭
-     * 当前Activity.
-     * 若要屏蔽Back键盘,注释该行代码即可
-     */
+
     @Override
     public void onBackPressed() {
 //        super.onBackPressed();
@@ -281,19 +296,11 @@ public class MainActivity extends Activity {
     }
 
 
-    /**
-     * 监听Back键按下事件,方法2:
-     * 注意:
-     * 返回值表示:是否能完全处理该事件
-     * 在此处返回false,所以会继续传播该事件.
-     * 在具体项目中此处的返回值视情况而定.
-     */
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            System.out.println("按下了back键   onKeyDown()");
             return false;
-        }else {
+        } else {
             return super.onKeyDown(keyCode, event);
         }
 
