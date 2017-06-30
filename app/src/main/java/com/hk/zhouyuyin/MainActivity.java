@@ -43,8 +43,8 @@ import butterknife.OnClick;
  */
 
 public class MainActivity extends Activity {
-    public static final String ZHUCE_URL = "http://192.168.124.27:8080/znsb/QQwlZnsbUser/register.do";
-    public static final String DENGLU_URL = "http://192.168.124.27:8080/znsb/QQwlZnsbUser/login.do";
+    public static final String ZHUCE_URL = "http://115.159.193.122:8080/znsb/QQwlZnsbUser/register.do";
+    public static final String DENGLU_URL = "http://115.159.193.122:8080/znsb/QQwlZnsbUser/login.do";
     @BindView(R.id.img_log)
     ImageView imgLog;
     @BindView(R.id.user_name)
@@ -76,7 +76,7 @@ public class MainActivity extends Activity {
         }
 
         Intent intent = getIntent();
-        if(intent != null) {
+        if(intent != null&&intent.getStringExtra("appName")!=null) {
             whichApp=intent.getStringExtra("appName");
         }
 //        serialNumberHelper.makeDir();
@@ -160,8 +160,10 @@ public class MainActivity extends Activity {
                         if(serialNumberHelper==null){
                             serialNumberHelper = new SerialNumberHelper(getApplicationContext());
                         }
-                        serialNumberHelper.makeDir();
+//                        serialNumberHelper.makeDir();
                         serialNumberHelper.save2File(jsonResult.getString("serialNumber"));//"serialNumber":"20160222uu000003"
+//                        serialNumberHelper.makeDir();
+                        serialNumberHelper.saveLiFile(jsonResult.getString("licence"));//"license":"304502202F757D592CDCAE575011DDB9D418E8EBBDBFBEF7A57732DCC36957D721701B0D022100B3BDEAB14DDC9C6880C0E6790EF01704DEC96EE05ABF7876A359A194A9AD6D6D"
                         if(whichApp.equals("myclass")){
                             finish();
                         }else {
@@ -177,6 +179,7 @@ public class MainActivity extends Activity {
                     }
 
                 } catch (JSONException e) {
+                    Toast.makeText(MainActivity.this,"请检查网络是否可用",Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
 
@@ -185,7 +188,7 @@ public class MainActivity extends Activity {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 Log.e("OldMainActivity", "login-error=" + volleyError);
-                Toast.makeText(MainActivity.this, volleyError.toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "请检查网络是否可用", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
@@ -231,7 +234,7 @@ public class MainActivity extends Activity {
             @Override
             public void onErrorResponse(VolleyError volleyError) {
                 Log.e("OldMainActivity", "rigister-error=" + volleyError);
-                Toast.makeText(MainActivity.this, volleyError.toString(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "请检查网络是否可用", Toast.LENGTH_SHORT).show();
             }
         }) {
             @Override
