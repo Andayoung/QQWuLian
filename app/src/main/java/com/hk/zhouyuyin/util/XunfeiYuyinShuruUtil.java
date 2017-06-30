@@ -13,7 +13,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.widget.Toast;
 
-import com.hk.zhouyuyin.OldMainActivity;
+import com.hk.zhouyuyin.MainActivity;
 import com.tencent.av.VideoController;
 import com.tencent.device.TXDeviceService;
 import com.tencent.devicedemo.R;
@@ -45,18 +45,18 @@ public class XunfeiYuyinShuruUtil {
 
     int ret = 0; // 函数调用返回值
 
-    private OldMainActivity oldMainActivity;
+    private MainActivity oldMainActivity;
 
     private long tid = -1;
     private int type = -1;
 
-    public XunfeiYuyinShuruUtil(OldMainActivity oldMainActivity) {
+    public XunfeiYuyinShuruUtil(MainActivity oldMainActivity) {
         super();
         this.oldMainActivity = oldMainActivity;
         initData();
     }
 
-    public XunfeiYuyinShuruUtil(OldMainActivity oldMainActivity, long tid, int type) {
+    public XunfeiYuyinShuruUtil(MainActivity oldMainActivity, long tid, int type) {
         super();
         this.oldMainActivity = oldMainActivity;
         this.tid = tid;

@@ -173,14 +173,14 @@ public class MainActivity extends Activity {
 
                     String newRemark = et.getText().toString();
                     if (newRemark.length() == 0) {
-                        Log.d("OldMainActivity", "the input new remark name is empty");
+                        Log.d("MainActivity", "the input new remark name is empty");
                         String init_name = TXDeviceService.getFriendInitialName(info.id);
-                        Log.d("OldMainActivity", "initial_name:" + init_name);
+                        Log.d("MainActivity", "initial_name:" + init_name);
                         if (init_name != null) {
                             TXDeviceService.modifyFriendRemark(info.id, init_name);
                         }
                     } else {
-                        Log.d("OldMainActivity", "new remark name is: " + newRemark);
+                        Log.d("MainActivity", "new remark name is: " + newRemark);
                         TXDeviceService.modifyFriendRemark(info.id, newRemark);
                     }
                 }

@@ -10,7 +10,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.hk.zhouyuyin.OldMainActivity;
+import com.hk.zhouyuyin.MainActivity;
 import com.hk.zhouyuyin.PublicWebActivity;
 import com.hk.zhouyuyin.util.XunfeiYuyinHecheng;
 
@@ -32,9 +32,9 @@ public class YuyinHttp {
     WebService mService = new WebService();
     private String content;
 
-    private OldMainActivity oldMainActivity;
+    private MainActivity oldMainActivity;
 
-    public YuyinHttp(Context context, String content, OldMainActivity oldMainActivity) {
+    public YuyinHttp(Context context, String content, MainActivity oldMainActivity) {
         super();
         this.context = context;
         this.content = content;
