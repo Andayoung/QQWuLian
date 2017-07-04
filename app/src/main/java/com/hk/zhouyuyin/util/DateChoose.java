@@ -120,7 +120,7 @@ public class DateChoose implements DatePicker.OnDateChangedListener{
 
 
         int currentYear = Integer.valueOf(yearStr.trim()).intValue();
-        int currentMonth = Integer.valueOf(monthStr.trim()).intValue() - 1;
+        int currentMonth = Integer.valueOf(monthStr.trim()).intValue();
         int currentDay = Integer.valueOf(dayStr.trim()).intValue();
 
         calendar.set(currentYear, currentMonth, currentDay);

@@ -61,7 +61,6 @@ public class LogOrRegActivity extends Activity {
     @BindView(R.id.denglu)
     Button denglu;
     SerialNumberHelper serialNumberHelper;
-    private String whichApp="";//1:myclass;2:habit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,17 +68,11 @@ public class LogOrRegActivity extends Activity {
         setContentView(R.layout.activity_reg_log);
         ButterKnife.bind(this);
 
-        Intent intent = getIntent();
-        if(intent != null&&intent.getStringExtra("appName")!=null) {
-            whichApp=intent.getStringExtra("appName");
-        }
 //        serialNumberHelper.makeDir();
 //        serialNumberHelper.save2File("1234567890");
 //        Log.e("LogOrRegActivity","num="+serialNumberHelper.read4File());
 
     }
-
-
 
 
     @OnClick({R.id.zhuce, R.id.denglu, R.id.txt_go_reg, R.id.user_sex, R.id.user_bir})
@@ -139,23 +132,13 @@ public class LogOrRegActivity extends Activity {
                     String resultSuccess = new JSONObject(s).getString("success");
                     if (resultSuccess.equals("true")) {
                         JSONObject jsonResult = new JSONObject(s).getJSONObject("data");
-                        if(serialNumberHelper==null){
+                        if (serialNumberHelper == null) {
                             serialNumberHelper = new SerialNumberHelper(getApplicationContext());
                         }
-//                        serialNumberHelper.makeDir();
                         serialNumberHelper.save2File(jsonResult.getString("serialNumber"));//"serialNumber":"20160222uu000003"
-//                        serialNumberHelper.makeDir();
                         serialNumberHelper.saveLiFile(jsonResult.getString("licence"));//"license":"304502202F757D592CDCAE575011DDB9D418E8EBBDBFBEF7A57732DCC36957D721701B0D022100B3BDEAB14DDC9C6880C0E6790EF01704DEC96EE05ABF7876A359A194A9AD6D6D"
-                        if(whichApp.equals("myclass")){
-                            Intent mIntent = new Intent();
-                            mIntent.putExtra("isDl", "1001");
-                            LogOrRegActivity.this.setResult(0, mIntent);
-                            finish();
-                        }else {
-                            finish();
-                            overridePendingTransition(R.anim.login,R.anim.logout);
-                        }
-                       
+                        finish();
+                        overridePendingTransition(R.anim.login, R.anim.logout);
                     } else {
                         String faultMsg = new JSONObject(s).getString("msg");
                         Toast.makeText(LogOrRegActivity.this, faultMsg, Toast.LENGTH_SHORT).show();
@@ -163,7 +146,7 @@ public class LogOrRegActivity extends Activity {
                     }
 
                 } catch (JSONException e) {
-                    Toast.makeText(LogOrRegActivity.this,"请检查网络是否可用",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LogOrRegActivity.this, "请检查网络是否可用", Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
 
@@ -279,30 +262,22 @@ public class LogOrRegActivity extends Activity {
     @Override
     public void onBackPressed() {
 
-        Log.e("LogOrRegActivity","按下了back键   onBackPressed()");
+        Log.e("LogOrRegActivity", "按下了back键   onBackPressed()");
     }
 
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if ((keyCode == KeyEvent.KEYCODE_BACK)) {
-            if(zhuce.getVisibility()==View.VISIBLE){
+            if (zhuce.getVisibility() == View.VISIBLE) {
                 zcToDl();
-            }else if(denglu.getVisibility()==View.VISIBLE){
-                if(whichApp.equals("myclass")){
-                    Log.e("LogOrRegActivity","setResult");
-                    Intent mIntent = new Intent();
-                    mIntent.putExtra("isDl", "1000");
-                    LogOrRegActivity.this.setResult(0, mIntent);
-                    finish();
-                }else {
-                    finish();
-                    overridePendingTransition(R.anim.login,R.anim.logout);
-                }
+            } else if (denglu.getVisibility() == View.VISIBLE) {
+                finish();
+                overridePendingTransition(R.anim.login, R.anim.logout);
             }
             return super.onKeyDown(keyCode, event);
         } else {
-            Log.e("LogOrRegActivity","else");
+            Log.e("LogOrRegActivity", "else");
             return super.onKeyDown(keyCode, event);
         }
 

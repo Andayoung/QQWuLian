@@ -166,6 +166,7 @@
         <activity
             android:name="com.hk.zhouyuyin.MainActivity"
             android:screenOrientation="portrait"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="stateHidden|stateUnchanged" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

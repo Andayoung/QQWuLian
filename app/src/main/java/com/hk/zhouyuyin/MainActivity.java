@@ -196,9 +196,12 @@ public class MainActivity extends Activity implements TencentLocationListener {
         imgTx.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, LogOrRegActivity.class);
-                startActivity(intent);
-                overridePendingTransition(R.anim.regin,R.anim.regout);
+                if (!checkIsLogin()) {
+                    Intent intent = new Intent(MainActivity.this, LogOrRegActivity.class);
+                    startActivity(intent);
+                    overridePendingTransition(R.anim.regin,R.anim.regout);
+                }
+
             }
         });
     }
