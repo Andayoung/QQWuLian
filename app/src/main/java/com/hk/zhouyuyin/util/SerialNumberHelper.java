@@ -28,17 +28,12 @@ public class SerialNumberHelper {
 
     public void save2File(String text) {
         try {
-
             File path= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
             if(!path.mkdirs()) {
                 Log.e("licence", "Directory not created");
             }
-            File file=new File(path,"serialNumber.txt");
+            File file=new File(path,"my.uu");
             FileOutputStream output = new FileOutputStream(file);
-//            String path = context.getExternalCacheDir().getPath();
-//            String path ="/storage/sdcard0/Android/data/com.tencent.devicedemo/cache";
-//            Log.e("SerialNumber", "path=" + path);
-//            FileOutputStream output = new FileOutputStream(path + "/serialNumber.txt");
             output.write(text.getBytes("utf-8"));
             output.close();
         } catch (FileNotFoundException e) {
@@ -50,30 +45,6 @@ public class SerialNumberHelper {
         }
     }
 
-    public void saveLiFile(String text) {
-        try {
-//            String path = context.getExternalCacheDir().getPath();
-            ///storage/sdcard0/Android/data/com.gg.classlist/files
-//            String path ="/storage/sdcard0/Android/data/com.tencent.devicedemo/cache";
-//            String path="/storage/sdcard0/Android/data/com.tencent.devicedemo/files";
-//            Log.e("license", "path=" + path);
-            File path=Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-            if(!path.mkdirs()) {
-                Log.e("licence", "Directory not created");
-            }
-            File file=new File(path,"license.txt");
-            FileOutputStream output = new FileOutputStream(file);
-//            FileOutputStream output = new FileOutputStream(Environment.getExternalStoragePublicDirectory(DIRECTORY_DOCUMENTS).getPath() + "/license.txt");
-            output.write(text.getBytes("utf-8"));
-            output.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
     public String read4File() {
         StringBuilder sb = new StringBuilder("");
@@ -82,9 +53,8 @@ public class SerialNumberHelper {
             if(!path.mkdirs()) {
                 Log.e("licence", "Directory not created");
             }
-            File file=new File(path, "serialNumber.txt");
+            File file=new File(path, "my.uu");
             FileInputStream input = new FileInputStream(file);
-//            FileInputStream input = new FileInputStream(context.getExternalCacheDir().getPath() + "/serialNumber.txt");
             byte[] temp = new byte[1024];
             int len = 0;
             while ((len = input.read(temp)) > 0) {
@@ -99,27 +69,16 @@ public class SerialNumberHelper {
         return sb.toString();
     }
 
-    public String readLiFile() {
-        StringBuilder sb = new StringBuilder("");
-        try {
-            File path=Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-            if(!path.mkdirs()) {
-                Log.e("licence", "Directory not created");
-            }
-            File file=new File(path, "license.txt");
-            FileInputStream input = new FileInputStream(file);
-            byte[] temp = new byte[1024];
-            int len = 0;
-            while ((len = input.read(temp)) > 0) {
-                sb.append(new String(temp, 0, len));
-            }
-            input.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+
+    public void deleteFile(){
+        File path= Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        if(!path.mkdirs()) {
+            Log.e("licence", "Directory not created");
         }
-        return sb.toString();
+        File file=new File(path, "my.uu");
+        if(file.isFile()&&file.exists()){
+            file.delete();
+        }
     }
 
 }

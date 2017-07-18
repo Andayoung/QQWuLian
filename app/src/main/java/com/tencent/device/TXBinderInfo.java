@@ -18,6 +18,12 @@ public class TXBinderInfo implements Parcelable {
     public TXBinderInfo() {
 
     }
+    public TXBinderInfo(long tinyid,String nick_name,int binder_type,String head_url){
+        this.tinyid=tinyid;
+        this.nick_name=nick_name.getBytes();
+        this.binder_type=binder_type;
+        this.head_url=head_url;
+    }
 
     public TXBinderInfo(Parcel parcel) {
         this.binder_type = parcel.readInt();

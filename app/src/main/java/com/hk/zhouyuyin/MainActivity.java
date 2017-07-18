@@ -2,13 +2,20 @@ package com.hk.zhouyuyin;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.hk.zhouyuyin.adapter.DrawAdapter;
+import com.hk.zhouyuyin.db.DBManager;
 import com.hk.zhouyuyin.http.YuyinHttp;
 import com.hk.zhouyuyin.modle.Message;
 import com.hk.zhouyuyin.util.PhoneInfo;
 import com.hk.zhouyuyin.util.SerialNumberHelper;
 import com.hk.zhouyuyin.util.XunfeiYuyinShuruUtil;
+import com.tencent.android.tpush.XGIOperateCallback;
+import com.tencent.android.tpush.XGPushClickedResult;
+import com.tencent.android.tpush.XGPushConfig;
+import com.tencent.android.tpush.XGPushManager;
 import com.tencent.av.VideoController;
 import com.tencent.device.TXBinderInfo;
 import com.tencent.device.TXDeviceService;
@@ -20,7 +27,9 @@ import com.tencent.map.geolocation.TencentLocationRequest;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
@@ -28,6 +37,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Parcelable;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -63,6 +73,7 @@ public class MainActivity extends Activity implements TencentLocationListener {
 
     private TencentLocationManager mLocationManager;
     private SerialNumberHelper serialNumberHelper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,17 +92,16 @@ public class MainActivity extends Activity implements TencentLocationListener {
         startGPS();
         initClick();
         initData();
-        if (!checkIsLogin()) {
-            Intent intent = new Intent(MainActivity.this, LogOrRegActivity.class);
-            startActivity(intent);
-        }
+
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-
+        if (!checkIsLogin()) {
+            showDialog();
+        }
         TXBinderInfo[] arrayBinder = TXDeviceService.getBinderList();
         if (arrayBinder != null) {
             binderList = new ArrayList<TXBinderInfo>();
@@ -99,20 +109,73 @@ public class MainActivity extends Activity implements TencentLocationListener {
                 binderList.add(arrayBinder[i]);
             }
         }
+
     }
+
     private boolean checkIsLogin() {
-        if(serialNumberHelper==null){
+        if (serialNumberHelper == null) {
             serialNumberHelper = new SerialNumberHelper(getApplicationContext());
         }
-        String serialNumber=serialNumberHelper.read4File();
-        Log.e("LogOrRegActivity", "serialNumber=" + serialNumber);
-        if (serialNumber==null||serialNumber.equals("")) {
+        String serialNumber = serialNumberHelper.read4File();
+        if (serialNumber == null || serialNumber.equals("")) {
             return false;
         } else {
+            String[] s=serialNumber.split(" ");
+            Context context = getApplicationContext();
+            XGPushConfig.enableDebug(context, true);
+            XGPushManager.registerPush(context, s[0], new XGIOperateCallback() {
+                @Override
+                public void onSuccess(Object data, int flag) {
+                    Log.e("TPush", "注册成功,Token值为：" + data);
+                }
+
+                @Override
+                public void onFail(Object data, int errCode, String msg) {
+                    Log.e("TPush", "注册失败,错误码为：" + errCode + ",错误信息：" + msg);
+                }
+            });
+            XGPushClickedResult clickedResult = XGPushManager.onActivityStarted(this);
+            if (clickedResult != null) {
+                String title = clickedResult.getTitle();
+                Log.e("TPush", "title:" + title);
+                String id = clickedResult.getMsgId() + "";
+                Log.e("TPush", "id:" + id);
+                String content = clickedResult.getContent();
+                Log.e("TPush", "content:" + content);
+            }
             return true;
         }
 
     }
+
+    void showDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setMessage("还没有登录？");
+        builder.setTitle("提示");
+        builder.setPositiveButton("下次登录", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+//                MainActivity.this.finish();
+            }
+        });
+        builder.setNegativeButton("去登录", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Log.e("MainActivity", "未登录");
+                dialog.dismiss();
+                Intent intent = new Intent();
+                ComponentName comp = new ComponentName("com.gg.myinformation", "com.gg.myinformation.LogOrRegActivity");
+                intent.setComponent(comp);
+                intent.putExtra("appName", "habitTrain");
+                intent.setAction("intent.action.loginZ");
+                startActivity(intent);
+
+            }
+        });
+        builder.create().show();
+    }
+
     private void initQQ() {
         Intent startIntent = new Intent(this, TXDeviceService.class);
         startService(startIntent);
@@ -136,7 +199,7 @@ public class MainActivity extends Activity implements TencentLocationListener {
         llVoice = (LinearLayout) findViewById(R.id.ll_is_voice);
         imgVOice = (ImageView) findViewById(R.id.img_voice);
         lvMessage = (ListView) findViewById(R.id.lv_content);
-        imgTx=(ImageView)findViewById(R.id.img_tx);
+        imgTx = (ImageView) findViewById(R.id.img_tx);
     }
 
     private void initData() {
@@ -193,7 +256,7 @@ public class MainActivity extends Activity implements TencentLocationListener {
                 startVoice();
             }
         });
-        imgTx.setOnClickListener(new OnClickListener() {
+       /* imgTx.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!checkIsLogin()) {
@@ -203,7 +266,7 @@ public class MainActivity extends Activity implements TencentLocationListener {
                 }
 
             }
-        });
+        });*/
     }
 
     private void startVoice() {
@@ -222,7 +285,14 @@ public class MainActivity extends Activity implements TencentLocationListener {
         if (msg == null || msg.equals("")) {
             Toast.makeText(MainActivity.this, "输入不能为空!", Toast.LENGTH_SHORT).show();
         } else {
-            if (msg.equals("我要找妈妈")) {
+            if(msg.indexOf("我要找")==0){
+                int length=msg.length();
+                DBManager mgr=new DBManager(MainActivity.this);
+                TXBinderInfo binderInfo=mgr.queryForId(msg.substring(3,length));
+                if(binderInfo!=null){
+                    TXDeviceService.getInstance().startAudioChatActivity(binderInfo.tinyid, binderInfo.binder_type);
+                }
+            } else if (msg.equals("我要找妈妈")) {
                 if (MainActivity.isNetworkAvailable(this)) {
                     if (binderList != null && binderList.size() > 0) {
                         if (false == VideoController.getInstance().hasPendingChannel()) {
@@ -268,7 +338,7 @@ public class MainActivity extends Activity implements TencentLocationListener {
         // 创建定位请求
         final TencentLocationRequest request = TencentLocationRequest.create();
         // 修改定位请求参数, 定位周期 3000 ms
-        request.setInterval(3000);
+        request.setInterval(60 * 3000);
 
         // 在 mThread 线程发起定位
         mHandler.post(new Runnable() {
@@ -315,7 +385,7 @@ public class MainActivity extends Activity implements TencentLocationListener {
                 public void run() {
                     // TODO Auto-generated method stub
                     // Log.i("tag", "GPS信号弱，请到开阔地带获取位置信息");
-                    Toast.makeText(MainActivity.this, "GPS信号弱，请检查定位权限是否开启", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(MainActivity.this, "GPS信号弱，请检查定位权限是否开启", Toast.LENGTH_SHORT).show();
                 }
             });
         }

@@ -69,7 +69,7 @@
         android:allowBackup="true"
         android:icon="@drawable/voice_bg"
         android:label="@string/app_name"
-        android:theme="@android:style/Theme.NoTitleBar">
+        android:theme="@style/Theme.AppCompat.Light.NoActionBar">
 
         <service android:name="com.tencent.device.TXDeviceService">
             <intent-filter>
@@ -176,13 +176,6 @@
         <activity
             android:name="com.hk.zhouyuyin.PublicWebActivity"
             android:screenOrientation="portrait" />
-        <activity android:name="com.hk.zhouyuyin.LogOrRegActivity"
-            android:launchMode="singleTask">
-            <intent-filter>
-                <action android:name="intent.action.loginZ" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
         <!-- 您的发布产品中请不要使用这个 key !!! -->
         <meta-data
             android:name="TencentMapSDK"
@@ -201,7 +194,95 @@
             android:name="IFLYTEK_CHANNEL"
             android:value="Android_Demo" />
 
+        <!-- 【必须】 信鸽receiver广播接收 -->
+        <receiver android:name="com.tencent.android.tpush.XGPushReceiver"
+            android:process=":xg_service_v3" >
+            <intent-filter android:priority="0x7fffffff" >
+                <!-- 【必须】 信鸽SDK的内部广播 -->
+                <action android:name="com.tencent.android.tpush.action.SDK" />
+                <action android:name="com.tencent.android.tpush.action.INTERNAL_PUSH_MESSAGE" />
+                <!-- 【必须】 系统广播：开屏和网络切换 -->
+                <action android:name="android.intent.action.USER_PRESENT" />
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+                <!-- 【可选】 一些常用的系统广播，增强信鸽service的复活机会，请根据需要选择。当然，你也可以添加APP自定义的一些广播让启动service -->
+                <action android:name="android.bluetooth.adapter.action.STATE_CHANGED" />
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
 
+        【可选】APP实现的Receiver，用于接收消息透传和操作结果的回调，请根据需要添加
+        YOUR_PACKAGE_PATH.CustomPushReceiver需要改为自己的Receiver：
+        <receiver android:name="com.hk.zhouyuyin.QQBinderReceiver"
+            android:exported="true" >
+            <intent-filter>
+                <!-- 接收消息透传 -->
+                <action android:name="com.tencent.android.tpush.action.PUSH_MESSAGE" />
+                <!-- 监听注册、反注册、设置/删除标签、通知被点击等处理结果 -->
+                <action android:name="com.tencent.android.tpush.action.FEEDBACK" />
+            </intent-filter>
+        </receiver>
+
+        <!-- 【注意】 如果被打开的activity是启动模式为SingleTop，SingleTask或SingleInstance，请根据通知的异常自查列表第8点处理-->
+        <activity
+            android:name="com.tencent.android.tpush.XGPushActivity"
+            android:exported="false" >
+            <intent-filter>
+                <!-- 若使用AndroidStudio，请设置android:name="android.intent.action"-->
+                <action android:name="android.intent.action" />
+            </intent-filter>
+        </activity>
+        <service
+            android:name="com.tencent.android.tpush.service.XGDaemonService"
+            android:process=":qq_push_daemon" />
+        <!-- 【必须】 信鸽service -->
+        <service
+            android:name="com.tencent.android.tpush.service.XGPushServiceV3"
+            android:exported="true"
+            android:persistent="true"
+            android:process=":xg_service_v3" />
+
+
+        <!-- 【必须】 提高service的存活率 -->
+        <service
+            android:name="com.tencent.android.tpush.rpc.XGRemoteService"
+            android:exported="true">
+            <intent-filter>
+                <!-- 【必须】 请修改为当前APP包名 .PUSH_ACTION, 如demo的包名为：com.qq.xgdemo -->
+                <action android:name="com.tencent.devicedemo.PUSH_ACTION" />
+            </intent-filter>
+        </service>
+
+
+        <!-- 【必须】 【注意】authorities修改为 包名.AUTH_XGPUSH, 如demo的包名为：com.qq.xgdemo-->
+        <provider
+            android:name="com.tencent.android.tpush.XGPushProvider"
+            android:authorities="com.tencent.devicedemo.AUTH_XGPUSH"
+            android:exported="true"/>
+
+        <!-- 【必须】 【注意】authorities修改为 包名.TPUSH_PROVIDER, 如demo的包名为：com.qq.xgdemo-->
+        <provider
+            android:name="com.tencent.android.tpush.SettingsContentProvider"
+            android:authorities="com.tencent.devicedemo.TPUSH_PROVIDER"
+            android:exported="false" />
+
+        <!-- 【必须】 【注意】authorities修改为 包名.TENCENT.MID.V3, 如demo的包名为：com.qq.xgdemo-->
+        <provider
+            android:name="com.tencent.mid.api.MidProvider"
+            android:authorities="com.tencent.devicedemo.TENCENT.MID.V3"
+            android:exported="true" >
+        </provider>
+
+
+
+        <!-- 【必须】 请将YOUR_ACCESS_ID修改为APP的AccessId，“21”开头的10位数字，中间没空格 -->
+        <meta-data
+            android:name="XG_V2_ACCESS_ID"
+            android:value="2100263094" />
+        <!-- 【必须】 请将YOUR_ACCESS_KEY修改为APP的AccessKey，“A”开头的12位字符串，中间没空格 -->
+        <meta-data
+            android:name="XG_V2_ACCESS_KEY"
+            android:value="AV997KQNZ84P" />
     </application>
 
 

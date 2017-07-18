@@ -9,7 +9,12 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import android.content.ComponentName;
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
+
+import com.hk.zhouyuyin.MyApplication;
 
 /**
  * 连接服务�?
@@ -49,6 +54,40 @@ public class WebService {
         txt = new String(temp).toString().trim();
         txt += "\n";
         Log.e(TAG, "获取到了：：" + txt);
+
+        /**
+         *
+         * qq音乐获取点
+         *
+         */
+        Log.e(TAG, "获取到了：：" + txt);
+        if (txt.contains("MUSIC_NAME")) {
+            String[] data1 = txt.split(" ");
+            String data2 = data1[3];
+            Log.e(TAG, "获取到了：：" + "music_name "+data2);
+            if(!data2 .equals("{}}")){
+                String music_name = data2.substring(0,data2.length()-1);
+                Log.e(TAG, "获取到了：：" + "music_name "+music_name);
+                ComponentName componentName = new ComponentName("com.gg.zqqmusic",
+                        "com.gg.zqqmusic.MainActivity");
+                final Intent intent = new Intent();
+                Bundle bundle = new Bundle();
+                bundle.putString("music_name", music_name);
+                intent.putExtras(bundle);
+                intent.setComponent(componentName);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);    //必须要加这句，必须！！！！
+                Log.d("一切正常", "一切正常");
+                MyApplication.getContext().startActivity(intent);
+            }
+        }
+        else {
+            Log.e(TAG, "获取到了：：" + "还没有说想听什么");
+        }
+        /**
+         *
+         * qq音乐获取点，不用捕获listview的更新了，不像喜马拉雅那种获取方法一样，现在直接获取服务器返回的值。
+         *
+         */
         reader.close();
         return txt;
     }

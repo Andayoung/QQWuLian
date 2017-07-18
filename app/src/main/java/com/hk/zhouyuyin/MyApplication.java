@@ -1,6 +1,7 @@
 package com.hk.zhouyuyin;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.DisplayMetrics;
@@ -12,6 +13,8 @@ import com.iflytek.cloud.SpeechUtility;
  */
 
 public class MyApplication extends Application {
+
+    private static Context context;
     /**
      * 屏幕的宽
      */
@@ -29,11 +32,16 @@ public class MyApplication extends Application {
 
     @Override
     public void onCreate() {
+        context = getApplicationContext();
         SpeechUtility.createUtility(this, "appid=" + "55b98087");
         super.onCreate();
         iniData();
 
 
+    }
+
+    public static Context getContext(){
+        return context;
     }
 
     private void iniData() {

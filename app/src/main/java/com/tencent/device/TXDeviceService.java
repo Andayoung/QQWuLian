@@ -1,8 +1,5 @@
 package com.tencent.device;
 
-import java.lang.ref.Reference;
-import java.lang.ref.ReferenceQueue;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,14 +16,10 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.hk.zhouyuyin.db.DBManager;
 import com.hk.zhouyuyin.util.SerialNumberHelper;
 import com.tencent.av.VideoController;
 import com.tencent.av.VideoService;
-import com.tencent.device.barrage.BarrageContext;
-import com.tencent.device.barrage.BarrageMsg;
-import com.tencent.device.barrage.BarrageMsg.GroupMsg;
-import com.tencent.device.barrage.IBarrageListener;
-import com.tencent.devicedemo.AudioChatActivity;
 
 
 /**
@@ -34,6 +27,7 @@ import com.tencent.devicedemo.AudioChatActivity;
  */
 public class TXDeviceService extends Service {
     static String TAG = "TXDeviceService";
+    private DBManager mgr;
 
     static {
         try {
@@ -146,8 +140,14 @@ public class TXDeviceService extends Service {
         // SDK测试
 
         SerialNumberHelper serialNumberHelper = new SerialNumberHelper(getApplicationContext());
-        String strGUID = serialNumberHelper.read4File();
-        String strLicense=serialNumberHelper.readLiFile();
+        String help = serialNumberHelper.read4File();
+        String[] s = help.split(" ");
+        String strGUID="";
+        String strLicense ="";
+        if(s.length>=2){
+            strGUID=s[0];
+            strLicense = s[1];
+        }
         Log.e("TXDeviceService", "strGUID=" + strGUID + ",strLicense=" + strLicense);
 //        String strGUID = "0A4F83FB3EC748de"; //144115194519237262
 //        String strLicense = "3046022100D22AA2EDE9D3A4AD04FEE7DACA124D84CFB094894E9E62EC0018BF1FF269AA65022100E41A44FAAC9FF080832317D241700BE10A0D17C93F8E80D8609D217F45B499D6";
@@ -547,7 +547,7 @@ public class TXDeviceService extends Service {
     // 成功上传设备注册信息到服务器（用于跨网绑定模式下是否展示二维码）
     private void onWlanUploadRegInfoSuccess() {
         Log.i(TAG, "onWlanUploadRegInfoSuccess: ");
-        showToastMessage("成功上传设备注册信息到服务器");
+//        showToastMessage("成功上传设备注册信息到服务器");
 
         String strUrl = getQRCodeUrl();
         Log.i(TAG, "getQRCodeUrl:" + strUrl);
@@ -563,13 +563,34 @@ public class TXDeviceService extends Service {
         }
     }
 
+
     //绑定者列表变化，error：错误码，0表示绑定者列表刷新成功，其它表示刷新失败
     private void onBinderListChange(int error, TXBinderInfo[] listBinder) {
+        if (mgr == null) {
+            mgr = new DBManager(getApplicationContext());
+        }
+        List<TXBinderInfo> list = new ArrayList<>();
+        for (int i = 0; i < listBinder.length; ++i) {
+            if (null == listBinder[i]) {
+                Log.i(TAG, "onBinderListChange: listBinder[" + i + "] is null ");
+                continue;
+            }
+            TXBinderInfo t = new TXBinderInfo();
+            t.nick_name = listBinder[i].getNickName().getBytes();
+            t.binder_type = listBinder[i].binder_type;
+            t.tinyid = listBinder[i].tinyid;
+            t.head_url = listBinder[i].head_url;
+            list.add(t);
+        }
+//        mgr.addAll(list);
+        mgr.addOtherNickName(list);
+        mgr.deleteOtherNickName(list);
+        mgr.query();
         if (error == 0) {
-            showToastMessage("绑定者列表刷新成功");
+//            showToastMessage("绑定者列表刷新成功");
             Log.i(TAG, "BinderList Fresh Success");
         } else {
-            showToastMessage("绑定者列表刷新失败");
+//            showToastMessage("绑定者列表刷新失败");
             Log.i(TAG, "BinderList Fresh Failed");
         }
 
@@ -606,9 +627,9 @@ public class TXDeviceService extends Service {
     private void onLoginComplete(int error) {
         Log.i(TAG, "onLoginComplete: error =  " + error);
         if (error == 0) {
-            showToastMessage("登录成功");
+//            showToastMessage("登录成功");
         } else {
-            showToastMessage("登录失败");
+//            showToastMessage("登录失败");
         }
 
     }
@@ -616,7 +637,7 @@ public class TXDeviceService extends Service {
     //上线成功后回调：电视端的所有其它操作都应该在上线成功以后才可以进行
     private void onOnlineSuccess() {
         Log.i(TAG, "onOnlineSuccess ");
-        showToastMessage("上线成功");
+//        showToastMessage("上线成功");
 
         //拉取绑定列表
         getBinderList();
@@ -1182,5 +1203,6 @@ public class TXDeviceService extends Service {
         }
         return friendInfo;
     }
+
 
 }
