@@ -9,10 +9,12 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.hk.zhouyuyin.MyApplication;
 
@@ -66,18 +68,22 @@ public class WebService {
             String data2 = data1[3];
             Log.e(TAG, "获取到了：：" + "music_name "+data2);
             if(!data2 .equals("{}}")){
-                String music_name = data2.substring(0,data2.length()-1);
-                Log.e(TAG, "获取到了：：" + "music_name "+music_name);
-                ComponentName componentName = new ComponentName("com.gg.zqqmusic",
-                        "com.gg.zqqmusic.MainActivity");
-                final Intent intent = new Intent();
-                Bundle bundle = new Bundle();
-                bundle.putString("music_name", music_name);
-                intent.putExtras(bundle);
-                intent.setComponent(componentName);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);    //必须要加这句，必须！！！！
-                Log.d("一切正常", "一切正常");
-                MyApplication.getContext().startActivity(intent);
+                try{
+                    String music_name_uncom = data2.substring(0,data2.length()-1);
+                    String music_name = AnalysisMusicName.Analysis(music_name_uncom);
+                    Log.e(TAG, "获取到了：：" + "music_name "+music_name);
+                    ComponentName componentName = new ComponentName("com.gg.tiantianshouyin",
+                            "com.gg.tiantianshouyin.qqmusic.SearchActivity");
+                    final Intent intent = new Intent();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("music_name", music_name);
+                    intent.putExtras(bundle);
+                    intent.setComponent(componentName);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);    //必须要加这句，必须！！！！
+                    MyApplication.getContext().startActivity(intent);
+                }catch (ActivityNotFoundException e){
+                }
+
             }
         }
         else {

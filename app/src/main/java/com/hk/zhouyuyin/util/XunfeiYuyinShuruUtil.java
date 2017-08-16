@@ -14,7 +14,9 @@ import android.os.Environment;
 import android.widget.Toast;
 
 import com.hk.zhouyuyin.MainActivity;
+import com.hk.zhouyuyin.db.DBManager;
 import com.tencent.av.VideoController;
+import com.tencent.device.TXBinderInfo;
 import com.tencent.device.TXDeviceService;
 import com.tencent.devicedemo.R;
 import com.hk.zhouyuyin.http.YuyinHttp;
@@ -186,11 +188,20 @@ public class XunfeiYuyinShuruUtil {
             resultBuffer.append(mIatResults.get(key));
         }
         String str = resultBuffer.toString();
-        if (str.equals("我要找妈妈")) {
+        if (str.indexOf("我要找") == 0&&str.indexOf("妈妈")==-1) {
+            int length = str.length();
+            DBManager mgr = new DBManager(oldMainActivity);
+            TXBinderInfo binderInfo = mgr.queryForId(str.substring(3, length - 1));//一般语音：“我要找XX。”，都会带一个句号
+            if (binderInfo != null) {
+                TXDeviceService.getInstance().startAudioChatActivity(binderInfo.tinyid, binderInfo.binder_type);
+            }
+        }else if (str.equals("我要找妈妈")) {
             if (tid != -1 && type != -1) {
                 if (isNetworkAvailable(oldMainActivity)) {
                     if (false == VideoController.getInstance().hasPendingChannel()) {
-                        TXDeviceService.getInstance().startAudioChatActivity(tid, type);
+                        DBManager mgr = new DBManager(oldMainActivity);
+                        TXBinderInfo binderInfo = mgr.queryForMama();
+                        TXDeviceService.getInstance().startAudioChatActivity(binderInfo.tinyid, binderInfo.binder_type);
                     } else {
                         Toast.makeText(oldMainActivity.getApplicationContext(), "语音中", Toast.LENGTH_SHORT).show();
                     }

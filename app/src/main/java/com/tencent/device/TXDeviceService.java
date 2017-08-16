@@ -142,15 +142,15 @@ public class TXDeviceService extends Service {
         SerialNumberHelper serialNumberHelper = new SerialNumberHelper(getApplicationContext());
         String help = serialNumberHelper.read4File();
         String[] s = help.split(" ");
-        String strGUID="";
-        String strLicense ="";
-        if(s.length>=2){
-            strGUID=s[0];
+        String strGUID = "";
+        String strLicense = "";
+        if (s.length >= 2) {
+            strGUID = s[0];
             strLicense = s[1];
         }
         Log.e("TXDeviceService", "strGUID=" + strGUID + ",strLicense=" + strLicense);
-//        String strGUID = "0A4F83FB3EC748de"; //144115194519237262
-//        String strLicense = "3046022100D22AA2EDE9D3A4AD04FEE7DACA124D84CFB094894E9E62EC0018BF1FF269AA65022100E41A44FAAC9FF080832317D241700BE10A0D17C93F8E80D8609D217F45B499D6";
+//        String strGUID = "20180101uu000001"; //144115194519237262
+//        String strLicense = "3046022100FD30B29F541BDE7647501D5504EB0B8571BED6418CE1BA619C6E0F9AE419FCD0022100DDD05B1C072F7E228F683F964E82CFAC154A61D5BB12CCE580B9DFD301A05289";
         String srvPubKey = "04965F4F6E352B12DE2A26F5A28817FA9791E10A94AAA15EAA8B71487DC4E875E3B135E8419D15E3D0425EE7975D1562B3";
         init("UU对话学习手表机器人", strLicense.getBytes(), strGUID, srvPubKey, 1700004918, 1, NETWORK_TYPE_WIFI, SDK_RUN_MODE_DEFAULT,
                 this.getCacheDir().getAbsolutePath(), 102400, this.getCacheDir().getAbsolutePath(), 1024000, this.getCacheDir().getAbsolutePath() + "/", 1024000);
@@ -566,6 +566,9 @@ public class TXDeviceService extends Service {
 
     //绑定者列表变化，error：错误码，0表示绑定者列表刷新成功，其它表示刷新失败
     private void onBinderListChange(int error, TXBinderInfo[] listBinder) {
+        if (listBinder == null) {
+            return;
+        }
         if (mgr == null) {
             mgr = new DBManager(getApplicationContext());
         }

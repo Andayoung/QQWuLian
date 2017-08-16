@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.hk.zhouyuyin.MainActivity;
 import com.hk.zhouyuyin.PublicWebActivity;
+import com.hk.zhouyuyin.util.SerialNumberHelper;
 import com.hk.zhouyuyin.util.XunfeiYuyinHecheng;
 
 import java.io.IOException;
@@ -82,16 +83,26 @@ public class YuyinHttp {
      * 获取手机唯一识别imei码
      */
     private String getIMEINum() {
+
         TelephonyManager tm = (TelephonyManager) context
                 .getSystemService(Context.TELEPHONY_SERVICE);
+        SerialNumberHelper serialNumberHelper = new SerialNumberHelper(context);
+        String help = serialNumberHelper.read4File();
         String imei = tm.getDeviceId();
+        if (help != null && !help.equals("")) {
+            String[] s = help.split(" ");
+            if(s!=null&&s.length>0){
+                imei =s[0];
+            }
+        }
+      /*  String imei = tm.getDeviceId();
         if (imei != null) {
             if ("".equals(imei)) {
                 imei = "358733050263717";
             }
         } else {
             imei = "358733050263717";
-        }
+        }*/
         return imei;
     }
 

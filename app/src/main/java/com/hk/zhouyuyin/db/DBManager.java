@@ -29,7 +29,7 @@ import java.util.Map;
 public class DBManager {
     private DBsqliteHelper helper;
     private Context context;
-    private final static String SEND_TO_QQ = "http://192.168.124.27:8080/znsb/QQwlBinders/bindersAddOrDel.do";
+    private final static String SEND_TO_QQ = "http://115.159.193.122:8080/znsb/QQwlBinders/bindersAddOrDel.do";
 
     public DBManager(Context context) {
         helper = new DBsqliteHelper(context);
@@ -90,6 +90,20 @@ public class DBManager {
         db.close();
         return null;
     }
+    public TXBinderInfo queryForMama() {
+        SQLiteDatabase db = helper.getWritableDatabase();
+        Cursor c = db.query("binderz", null, "bindertype=?", new String[]{String.valueOf(1)}, null, null, null, null);
+        while (c.moveToNext()) {
+            TXBinderInfo txBinderInfo = new TXBinderInfo(c.getLong(c.getColumnIndex("tinyid"))
+                    , c.getString(c.getColumnIndex("nickname"))
+                    , c.getInt(c.getColumnIndex("bindertype"))
+                    , c.getString(c.getColumnIndex("headurl")));
+            return txBinderInfo;
+        }
+        c.close();
+        db.close();
+        return null;
+    }
 
     public List<TXBinderInfo> query() {
         ArrayList<TXBinderInfo> txBinderInfos = new ArrayList<TXBinderInfo>();
@@ -128,7 +142,7 @@ public class DBManager {
                 }
             }
             if (i == 0) {
-                deleteForNickName(c.getString(c.getColumnIndex("nickname")));
+                deleteForNickName(c.getString(c.getColumnIndex("tinyid")));
                 sendToQQ(context, "del", String.valueOf(c.getString(c.getColumnIndex("tinyid"))), c.getString(c.getColumnIndex("nickname")), String.valueOf(c.getInt(c.getColumnIndex("bindertype"))), c.getString(c.getColumnIndex("headurl")));
                 Log.e("DDD", "deleteOtherNickName " + c.getString(c.getColumnIndex("nickname")));
             }

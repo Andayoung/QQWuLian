@@ -1,4 +1,4 @@
-package com.hk.zhouyuyin;
+package com.hk.zhouyuyin.receiver;
 
 import android.content.Context;
 import android.util.Log;

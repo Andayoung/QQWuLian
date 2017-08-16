@@ -2,12 +2,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#EEEEEE"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="45dp"
-        android:background="#2988f6" >
+        android:background="#2988f6">
 
         <ImageView
             android:id="@+id/img_tx"
@@ -31,74 +31,74 @@
         android:id="@+id/lv_content"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_weight="1"
         android:cacheColorHint="#00000000"
         android:divider="@null"
-        android:listSelector="#00000000"
-        android:layout_weight="1" />
+        android:listSelector="#00000000" />
 
-    <LinearLayout
-        android:background="#ffffff"
+    <!--<LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical" >
+        android:background="#ffffff"
+        android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/ll_is_voice"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:visibility="visible" >
+            android:visibility="visible" ></LinearLayout>
 
-            <ImageView
-                android:id="@+id/img_voice"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:layout_margin="20dp"
-                android:scaleType="fitCenter"
-                android:src="@drawable/uu_37" />
-        </LinearLayout>
+    </LinearLayout>-->
+
+
+    <LinearLayout
+        android:id="@+id/ly_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="3dp">
+
+        <ImageView
+            android:id="@+id/img_voice_keyboard"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/uu_25" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="3dp" >
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/img_voice_keyboard"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/uu_25" />
-
-            <LinearLayout
-                android:layout_width="0dp"
+            <EditText
+                android:id="@+id/edt_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical" >
+                android:layout_margin="5dp"
+                android:background="#00000000"
+                android:singleLine="true"
+                android:textSize="20sp" />
 
-                <EditText
-                    android:id="@+id/edt_content"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    android:background="#00000000"
-                    android:singleLine="true"
-                    android:textSize="20sp" />
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0.5dp"
-                    android:background="#2988f6" />
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/img_mian_send"
-                android:layout_width="50dp"
-                android:layout_height="30dp"
-                android:src="@drawable/uu_28" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#2988f6" />
         </LinearLayout>
 
-
+        <ImageView
+            android:id="@+id/img_mian_send"
+            android:layout_width="50dp"
+            android:layout_height="30dp"
+            android:src="@drawable/uu_28" />
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/img_voice"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="-120dp"
+        android:scaleType="fitCenter"
+        android:layout_gravity="center"
+        android:src="@drawable/select_voice" />
 </LinearLayout>
